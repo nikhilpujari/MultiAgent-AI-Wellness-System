@@ -1,0 +1,30 @@
+# Web Framework & API
+streamlit>=1.28.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Environment & Configuration
+python-dotenv>=1.0.0
+
+# AI & LLM
+openai>=1.3.0
+langchain>=0.0.350
+langchain-openai>=0.0.2
+langgraph>=0.0.40
+
+# Database & Storage
+sqlmodel>=0.0.14
+chromadb>=0.4.15
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.24.0
+
+# Vector Search
+faiss-cpu>=1.7.4
+
+# HTTP & Utilities
+requests>=2.31.0
+
+# Validation & Models
+pydantic>=2.0.0

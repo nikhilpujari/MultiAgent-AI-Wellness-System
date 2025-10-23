@@ -1,0 +1,16 @@
+import re
+
+class DataIngestionAgent:
+    """Parses calories, macros, or durations from free text."""
+
+    def extract(self, text: str):
+        # Naive extraction
+        calories = None
+        duration = None
+        m1 = re.search(r"(\d+)\s*cal", text)
+        if m1:
+            calories = float(m1.group(1))
+        m2 = re.search(r"(\d+)\s*(min|minutes)", text)
+        if m2:
+            duration = float(m2.group(1))
+        return {"calories": calories, "duration_min": duration}

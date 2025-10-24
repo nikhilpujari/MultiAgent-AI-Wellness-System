@@ -7,6 +7,7 @@ from agents.nutrition_specialist import NutritionAgent
 from agents.doctor_avatar import DoctorAgent
 from agents.tracking_viz import TrackingAgent
 from agents.general_agent import GeneralAgent
+from agents.api_tool_agent import APIToolAgent
 
 
 # 🧠 Shared state definition
@@ -22,7 +23,23 @@ nutrition = NutritionAgent()
 doctor = DoctorAgent()
 tracking = TrackingAgent()
 general = GeneralAgent()
+api_tool = APIToolAgent()
 
+
+# 🧠 Helper functions
+def get_user_message(state: GraphState) -> str:
+    """Extract the original user message from state"""
+    for msg in state.messages:
+        if msg.get("role") == "user":
+            return msg["content"]
+    return ""
+
+def get_next_node(state: GraphState) -> str:
+    """Determine next node from state messages"""
+    for msg in reversed(state.messages):
+        if msg.get("role") == "next_node":
+            return msg["content"]
+    return END
 
 # 🧠 Node wrappers — each node must be callable
 def router_node(state: GraphState) -> GraphState:
@@ -55,16 +72,30 @@ def fitness_node(state: GraphState) -> GraphState:
 
 def nutrition_node(state: GraphState) -> GraphState:
     user = state.user
-    # Get the original user message, not the routing decision
-    user_msg = None
-    for msg in state.messages:
-        if msg.get("role") == "user":
-            user_msg = msg["content"]
+    user_msg = get_user_message(state)
     
-    reply = nutrition.respond(user, user_msg)
-    state.messages.append({"role": "assistant", "content": reply})
+    import streamlit as st
+    st.write(f"🍎 NUTRITION: Processing message")
     
-    return state
+    # Check if this needs food database lookup
+    if api_tool.needs_food_lookup(user_msg):
+        st.write(f"🍎 NUTRITION: Requesting API food lookup")
+        
+        # Extract food items for lookup
+        food_items = api_tool.extract_food_items(user_msg)
+        
+        # Request API lookup
+        state.messages.append({"role": "food_lookup_request", "content": food_items})
+        state.messages.append({"role": "next_node", "content": "api_tool"})
+        
+        return state
+    else:
+        # Regular nutrition response without API lookup
+        st.write(f"🍎 NUTRITION: Providing standard response")
+        reply = nutrition.respond(user, user_msg)
+        state.messages.append({"role": "assistant", "content": reply})
+        
+        return state
 
 
 def doctor_node(state: GraphState) -> GraphState:
@@ -84,6 +115,57 @@ def tracking_node(state: GraphState) -> GraphState:
     user = state.user
     reply = tracking.summarize(user)
     state.messages.append({"role": "assistant", "content": reply})
+    return state
+
+
+def api_tool_node(state: GraphState) -> GraphState:
+    import streamlit as st
+    st.write(f"🔍 API TOOL: Processing food lookup request")
+    
+    # Get the food query from nutrition agent
+    food_query = None
+    for msg in reversed(state.messages):
+        if msg.get("role") == "food_lookup_request":
+            food_query = msg["content"]
+            break
+    
+    if food_query:
+        # Look up food data
+        food_data = api_tool.lookup_food(food_query)
+        state.messages.append({"role": "food_data", "content": food_data})
+        state.messages.append({"role": "next_node", "content": "nutrition_with_data"})
+        
+        st.write(f"🔍 API TOOL: Lookup complete, returning to nutrition agent")
+    else:
+        st.write(f"❌ API TOOL: No food query found")
+        state.messages.append({"role": "next_node", "content": "nutrition_with_data"})
+    
+    return state
+
+
+def nutrition_with_data_node(state: GraphState) -> GraphState:
+    user = state.user
+    user_msg = get_user_message(state)
+    
+    import streamlit as st
+    st.write(f"🍎 NUTRITION: Generating response with API data")
+    
+    # Get the API data
+    food_data = None
+    for msg in reversed(state.messages):
+        if msg.get("role") == "food_data":
+            food_data = msg["content"]
+            break
+    
+    # Generate response with real data
+    if food_data:
+        reply = nutrition.respond_with_api_data(user, user_msg, food_data)
+    else:
+        # Fallback to regular response
+        reply = nutrition.respond(user, user_msg)
+    
+    state.messages.append({"role": "assistant", "content": reply})
+    
     return state
 
 
@@ -138,20 +220,24 @@ def general_node(state: GraphState) -> GraphState:
 def build_graph():
     graph = StateGraph(GraphState)
 
+    # Add all nodes
     graph.add_node("router", router_node)
     graph.add_node("fitness", fitness_node)
     graph.add_node("nutrition", nutrition_node)
     graph.add_node("doctor", doctor_node)
     graph.add_node("tracking", tracking_node)
     graph.add_node("general", general_node)
+    graph.add_node("api_tool", api_tool_node)
+    graph.add_node("nutrition_with_data", nutrition_with_data_node)
 
-    # dynamic routing
+    # Router dynamic routing
     def route(state: GraphState):
         for msg in reversed(state.messages):
             if msg.get("role") == "next_node":
                 return msg["content"]
         return "tracking"
 
+    # Router edges
     graph.add_conditional_edges(
         "router",
         route,
@@ -164,8 +250,21 @@ def build_graph():
         },
     )
 
-    # terminal edges
-    for node in ["fitness", "nutrition", "doctor", "tracking", "general"]:
+    # 🔄 LOOP: Nutrition can go to API tool or end
+    graph.add_conditional_edges(
+        "nutrition",
+        get_next_node,
+        {
+            "api_tool": "api_tool",
+            END: END
+        }
+    )
+
+    # 🔄 LOOP: API tool goes back to nutrition with data
+    graph.add_edge("api_tool", "nutrition_with_data")
+
+    # Terminal edges
+    for node in ["fitness", "doctor", "tracking", "general", "nutrition_with_data"]:
         graph.add_edge(node, END)
 
     graph.set_entry_point("router")

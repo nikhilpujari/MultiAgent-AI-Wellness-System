@@ -39,7 +39,7 @@ def get_next_node(state: GraphState) -> str:
     for msg in reversed(state.messages):
         if msg.get("role") == "next_node":
             return msg["content"]
-    return END
+    return "__end__"
 
 # 🧠 Node wrappers — each node must be callable
 def router_node(state: GraphState) -> GraphState:
@@ -94,6 +94,8 @@ def nutrition_node(state: GraphState) -> GraphState:
         st.write(f"🍎 NUTRITION: Providing standard response")
         reply = nutrition.respond(user, user_msg)
         state.messages.append({"role": "assistant", "content": reply})
+        # Explicitly set next_node to END for proper routing
+        state.messages.append({"role": "next_node", "content": "__end__"})
         
         return state
 
@@ -256,7 +258,7 @@ def build_graph():
         get_next_node,
         {
             "api_tool": "api_tool",
-            END: END
+            "__end__": "__end__"
         }
     )
 

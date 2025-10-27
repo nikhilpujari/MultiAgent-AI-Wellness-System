@@ -22,7 +22,7 @@ class DoctorAgent:
                     profile_context = f"""
 User Profile Context:
 - Age: {profile.age}, Gender: {profile.gender}
-- BMI: {profile.bmi:.1f if profile.bmi else 'unknown'}
+- BMI: {profile.bmi:.1f if profile.bmi is not None else 'unknown'}
 - Health Conditions: {profile.health_conditions or 'none'}
 - Medications: {profile.medications or 'none'}
 - Allergies: {profile.allergies or 'none'}

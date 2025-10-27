@@ -27,7 +27,7 @@ User Profile Context:
 - Fitness Level: {profile.fitness_experience}
 - Primary Goal: {profile.primary_goal}
 - Activity Level: {profile.activity_level}
-- BMI: {profile.bmi:.1f if profile.bmi else 'unknown'}
+- BMI: {profile.bmi:.1f if profile.bmi is not None else 'unknown'}
 - Health Conditions: {profile.health_conditions or 'none'}
 """
             else:

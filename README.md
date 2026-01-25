@@ -6,6 +6,8 @@ An intelligent wellness assistant powered by multiple specialized AI agents that
 
 [video/aiwelness.mov](https://nikhilpujari.in/Xspace/video/index.html)
 
+![Screenshot](ss/ss1.png)
+
 ## 🌟 Features
 
 ### 🤖 Multi-Agent Architecture

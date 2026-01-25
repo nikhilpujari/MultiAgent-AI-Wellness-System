@@ -2,9 +2,14 @@
 
 An intelligent wellness assistant powered by multiple specialized AI agents that provide personalized fitness, nutrition, and health guidance through a modern web interface.
 
+**Watch video demo:**
+
+<video src="video/AiWellness.mov" controls width="100%"></video>
+
 ## 🌟 Features
 
 ### 🤖 Multi-Agent Architecture
+
 - **Router Agent**: Intelligently classifies user queries and routes them to the appropriate specialist
 - **Fitness Coach**: Provides personalized workout advice and exercise guidance
 - **Nutrition Specialist**: Offers meal planning and dietary recommendations
@@ -12,17 +17,20 @@ An intelligent wellness assistant powered by multiple specialized AI agents that
 - **General Agent**: Manages out-of-domain queries with helpful redirects
 
 ### 📊 Comprehensive Tracking
+
 - **User Profiles**: Complete health profiles with BMI calculation and body age analysis
 - **Meal Logging**: Daily nutrition tracking with calorie and macro counting
 - **Workout Sessions**: Exercise logging with duration and intensity tracking
 - **Analytics Dashboard**: Visual insights and progress tracking
 
 ### 🧠 Smart Knowledge Base
+
 - **RAG System**: Retrieval-Augmented Generation using FAISS vector search
 - **Curated Content**: Expert-reviewed fitness, nutrition, and health information
 - **Personalized Responses**: Context-aware advice based on user profiles
 
 ### 🎨 Modern Interface
+
 - **Streamlit Web App**: Clean, responsive chat interface
 - **Real-time Workflow**: Live agent routing and processing visibility
 - **Multi-page Dashboard**: Profile management, logging, and analytics
@@ -40,12 +48,14 @@ User Query → Router Agent → Specialized Agent → Personalized Response
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.8+
 - OpenAI API key
 
 ### Installation
 
 1. **Clone and setup environment**
+
 ```bash
 git clone <repository-url>
 cd ai-wellness
@@ -54,22 +64,26 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
 2. **Install dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. **Configure environment**
+
 ```bash
 cp .env.example .env
 # Edit .env and add your OpenAI API key
 ```
 
 4. **Initialize knowledge base**
+
 ```bash
 python -c "from tools.rag import build_index; build_index()"
 ```
 
 5. **Run the application**
+
 ```bash
 streamlit run app/main_streamlit.py
 ```
@@ -108,18 +122,21 @@ ai-wellness/
 ## 🎯 Usage Examples
 
 ### Chat Interface
+
 - **Fitness**: "I want to start working out but I'm a beginner"
 - **Nutrition**: "What should I eat for breakfast to lose weight?"
 - **Health**: "I've been feeling anxious lately, any tips?"
 - **General**: "What's the weather like?" (redirected appropriately)
 
 ### Profile Management
+
 - Complete health questionnaire
 - BMI and body age calculation
 - Goal setting and tracking
 - AI-powered health insights
 
 ### Tracking & Analytics
+
 - Log meals with automatic nutrition calculation
 - Record workout sessions with intensity tracking
 - View progress charts and trends
@@ -137,6 +154,7 @@ ai-wellness/
 ## 🔧 Configuration
 
 ### Environment Variables
+
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 EMBEDDING_MODEL=text-embedding-3-small
@@ -145,6 +163,7 @@ ENVIRONMENT=production
 ```
 
 ### Customization
+
 - **Knowledge Base**: Add documents to `data/seed_docs/`
 - **Agents**: Modify agent behavior in `agents/` directory
 - **UI**: Customize Streamlit interface in `app/main_streamlit.py`
@@ -152,15 +171,19 @@ ENVIRONMENT=production
 ## 📈 Features in Detail
 
 ### Intelligent Routing
+
 The router agent uses OpenAI's language model to classify user queries with high accuracy, falling back to keyword-based classification for reliability.
 
 ### Personalized Responses
+
 Each agent considers the user's profile, health conditions, goals, and preferences when generating responses, ensuring relevant and safe advice.
 
 ### Knowledge Integration
+
 The RAG system searches through curated health and fitness content to provide evidence-based recommendations alongside AI-generated advice.
 
 ### Comprehensive Tracking
+
 Users can log meals, workouts, and health metrics, with the system providing analytics and insights to support their wellness journey.
 
 ## 🤝 Contributing
@@ -182,11 +205,13 @@ This application provides general wellness information and should not replace pr
 ## 🆘 Support
 
 For questions or issues:
+
 1. Check the [BUILD_GUIDE.md](BUILD_GUIDE.md) for detailed setup instructions
 2. Review the troubleshooting section below
 3. Open an issue on GitHub
 
 ### Common Issues
+
 - **OpenAI API errors**: Verify your API key in `.env`
 - **Database issues**: Delete `storage/app.db` to reset
 - **RAG index problems**: Rebuild with `python -c "from tools.rag import build_index; build_index()"`

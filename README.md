@@ -4,7 +4,7 @@ An intelligent wellness assistant powered by multiple specialized AI agents that
 
 **Watch video demo:**
 
-[video/aiwelness.mov](video/AiWellness.mov)
+[video/aiwelness.mov](https://nikhilpujari.in/Xspace/video/index.html)
 
 ## 🌟 Features
 
